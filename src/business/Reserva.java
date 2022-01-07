@@ -1,8 +1,9 @@
 package business;
 
+import java.io.Serializable;
 import java.util.*;
 
-public class Reserva {
+public class Reserva implements Serializable {
     private String codigo;
     private List<Voo> viagem;
     private User user;
