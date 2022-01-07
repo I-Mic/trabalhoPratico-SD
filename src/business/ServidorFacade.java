@@ -14,7 +14,7 @@ public class ServidorFacade {
     private Map<String,User> utilizadores;
     private Map<String,Reserva> reservas;
     private List<Voo> voos;
-    private ReentrantLock lockserver= new ReentrantLock();
+    private final ReentrantLock lockserver= new ReentrantLock();
 
     public ServidorFacade() {
         this.utilizadores = new HashMap<>();
@@ -69,15 +69,12 @@ public class ServidorFacade {
     }
 
     public User login(String nome, String password) throws NomeNaoExisteException,PalavraPasseIncorretaException{
-        try {
+
             if (utilizadores.get(nome) == null)
                 throw new NomeNaoExisteException("Conta nao encontrada");
             else if (!utilizadores.get(nome).getPass().equals(password))
                 throw new PalavraPasseIncorretaException("Palavra-passe incorrecta!");
             else return utilizadores.get(nome);
-        } finally {
-
-        }
 
     }
 
@@ -89,7 +86,7 @@ public class ServidorFacade {
     }
 
     /**adiciona uma nova reserva**/
-    public String addReserva(List<String> percurso, LocalDate dataInicio,LocalDate daataFim,User user)throws VooNaoEncontradoException{
+    public String addReserva(List<String> percurso, LocalDate dataInicio,LocalDate daataFim,User user) {
         try {
             List<Voo> viagem = new ArrayList<>();
             String codigo;
@@ -114,11 +111,12 @@ public class ServidorFacade {
         return String.valueOf((this.reservas.size() + 1));
     }
 
+    /** Falta fazer no intervalo de tempo **/
     public Voo getVooOrigemDestinoIntervalo(String origem,String destino,LocalDate dataInicio,LocalDate daataFim) throws VooNaoEncontradoException{
         try {
             this.lockserver.lock();
             for (Voo voo:this.voos) {
-                if(voo.getOrigem() == origem && voo.getDestino() == destino)
+                if(voo.getOrigem().equals(origem) && voo.getDestino().equals(destino))
                     return voo;
             }
             throw new VooNaoEncontradoException("Voo nao encontrado!");
@@ -134,7 +132,7 @@ public class ServidorFacade {
             this.lockserver.lock();
             if(this.reservas.get(codReserva)==null)
                 throw  new ReservaNaoEncontradaException("Reserva Nao encontrada");
-            else if(this.reservas.get(codReserva).getUser().getNome() != utilizador)
+            else if(!this.reservas.get(codReserva).getUser().getNome().equals(utilizador))
                 throw  new ReservaNaoEncontradaException("Reserva Nao encontrada");
             else this.reservas.remove(codReserva);
         }finally {
