@@ -3,6 +3,7 @@ package business;
 
 import business.exceptions.*;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -68,32 +69,80 @@ public class ServidorFacade {
     }
 
     public User login(String nome, String password) throws NomeNaoExisteException,PalavraPasseIncorretaException{
-        try{
-            this.lockserver.lock();
-            if(utilizadores.get(nome) == null)
+        try {
+            if (utilizadores.get(nome) == null)
                 throw new NomeNaoExisteException("Conta nao encontrada");
-            else
-            if(!utilizadores.get(nome).getPass().equals(password))
+            else if (!utilizadores.get(nome).getPass().equals(password))
                 throw new PalavraPasseIncorretaException("Palavra-passe incorrecta!");
             else return utilizadores.get(nome);
+        } finally {
+
         }
-        finally{
-            this.lockserver.unlock();
-        }
+
     }
 
     /**adiciona um novo voo**/
     public void addVoo(Voo voo){
-
+        this.lockserver.lock();
+        voos.add(voo);
+        this.lockserver.unlock();
     }
 
     /**adiciona uma nova reserva**/
-    public void addReserva(Reserva reserva){
+    public String addReserva(List<String> percurso, LocalDate dataInicio,LocalDate daataFim,User user)throws VooNaoEncontradoException{
+        try {
+            List<Voo> viagem = new ArrayList<>();
+            String codigo;
+            for (int i = 0; i < percurso.size() - 1; i++)
+                viagem.add(getVooOrigemDestinoIntervalo(percurso.get(i), percurso.get(i + 1), dataInicio, daataFim));
 
+            this.lockserver.lock();
+
+            codigo = reservationCodeGenerator();
+            Reserva reserva = new Reserva(codigo, viagem, user);
+            this.reservas.put(codigo, reserva);
+
+            this.lockserver.unlock();
+            return codigo;
+        }
+        catch (VooNaoEncontradoException e){
+            return null;
+        }
+    }
+
+    public String reservationCodeGenerator(){
+        return String.valueOf((this.reservas.size() + 1));
+    }
+
+    public Voo getVooOrigemDestinoIntervalo(String origem,String destino,LocalDate dataInicio,LocalDate daataFim) throws VooNaoEncontradoException{
+        try {
+            this.lockserver.lock();
+            for (Voo voo:this.voos) {
+                if(voo.getOrigem() == origem && voo.getDestino() == destino)
+                    return voo;
+            }
+            throw new VooNaoEncontradoException("Voo nao encontrado!");
+
+        } finally {
+            this.lockserver.unlock();
+        }
     }
 
     /**cancela uma reserva**/
-    public void removeReserva(String codReserva){
+    public void removeReserva(String codReserva,String utilizador) throws  ReservaNaoEncontradaException{
+        try{
+            this.lockserver.lock();
+            if(this.reservas.get(codReserva)==null)
+                throw  new ReservaNaoEncontradaException("Reserva Nao encontrada");
+            else if(this.reservas.get(codReserva).getUser().getNome() != utilizador)
+                throw  new ReservaNaoEncontradaException("Reserva Nao encontrada");
+            else this.reservas.remove(codReserva);
+        }finally {
+            this.lockserver.unlock();
+        }
+    }
 
+    public String listaVoosExistentes(){
+        return this.voos.toString();
     }
 }
