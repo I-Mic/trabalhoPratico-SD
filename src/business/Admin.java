@@ -1,4 +1,4 @@
-package servidor.business;
+package business;
 
 public class Admin extends  User{
 

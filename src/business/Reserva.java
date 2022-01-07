@@ -1,4 +1,4 @@
-package servidor.business;
+package business;
 
 import java.util.*;
 
