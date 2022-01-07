@@ -2,7 +2,7 @@ package Server;
 
 
 import business.*;
-import Server.exceptions.*;
+import Server.Exceptions.*;
 
 import java.time.LocalDate;
 import java.util.ArrayList;

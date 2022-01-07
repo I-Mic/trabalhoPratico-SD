@@ -1,4 +1,4 @@
-package Server.exceptions;
+package Server.Exceptions;
 
 public class PalavraPasseIncorretaException extends Exception{
     public PalavraPasseIncorretaException(String msg){
