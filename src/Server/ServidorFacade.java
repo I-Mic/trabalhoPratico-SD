@@ -1,7 +1,8 @@
-package business;
+package Server;
 
 
-import business.exceptions.*;
+import business.*;
+import Server.exceptions.*;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -11,8 +12,8 @@ import java.util.Map;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class ServidorFacade {
-    private Map<String,User> utilizadores;
-    private Map<String,Reserva> reservas;
+    private Map<String, User> utilizadores;
+    private Map<String, Reserva> reservas;
     private List<Voo> voos;
     private final ReentrantLock lockserver= new ReentrantLock();
 

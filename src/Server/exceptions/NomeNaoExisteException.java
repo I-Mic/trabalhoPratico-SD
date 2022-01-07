@@ -1,4 +1,4 @@
-package business.exceptions;
+package Server.exceptions;
 
 public class NomeNaoExisteException extends Exception{
     public NomeNaoExisteException(String msg){
