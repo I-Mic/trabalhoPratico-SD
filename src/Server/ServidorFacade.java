@@ -116,9 +116,12 @@ public class ServidorFacade {
     public Voo getVooOrigemDestinoIntervalo(String origem,String destino,LocalDate dataInicio,LocalDate daataFim) throws VooNaoEncontradoException{
         try {
             this.lockserver.lock();
-            for (Voo voo:this.voos) {
-                if(voo.getOrigem().equals(origem) && voo.getDestino().equals(destino))
+            for (int i= 0;i<this.voos.size();i++) {
+                Voo voo = this.voos.get(i);
+                if(voo.getOrigem().equals(origem) && voo.getDestino().equals(destino) && voo.getCapacidade()>0) {
+                    this.voos.get(i).decrementCapacidade();
                     return voo;
+                }
             }
             throw new VooNaoEncontradoException("Voo nao encontrado!");
 

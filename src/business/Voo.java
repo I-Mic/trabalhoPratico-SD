@@ -55,6 +55,10 @@ public class Voo {
         this.data = data;
     }
 
+    public void decrementCapacidade(){
+        this.capacidade--;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
