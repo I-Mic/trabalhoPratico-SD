@@ -16,6 +16,13 @@ public class Menu {
         System.out.println("***********************************");
     }
 
+    public void menuAdminOuUser(){
+        System.out.println("***********************************");
+        System.out.println("*           [1] ADMIN             *");
+        System.out.println("*           [2] USER              *");
+        System.out.println("***********************************");
+    }
+
     public void menuRegistrarNome(){
         System.out.println("***********************************");
         System.out.println("*         INSIRA O SEU NOME       *");
