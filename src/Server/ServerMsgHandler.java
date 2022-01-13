@@ -21,8 +21,7 @@ public class ServerMsgHandler {
     private String destino;
     private int capacidade;
     private LocalDate data;
-    private int respostaInt;
-    private String respostaString;
+
 
 
     public ServerMsgHandler() {
@@ -84,13 +83,6 @@ public class ServerMsgHandler {
         return data;
     }
 
-    public int getRespostaInt() {
-        return respostaInt;
-    }
-
-    public String getRespostaString() {
-        return respostaString;
-    }
 
     // converte uma mensagem  num array de bytes
     public void receiveMsg(Socket socket) throws IOException {
