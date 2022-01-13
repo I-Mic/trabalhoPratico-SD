@@ -18,7 +18,7 @@ public class Client {
     private Socket clientSocket;
     private String hostname;
     private BufferedReader systemIn;
-    Menu menu = new Menu();
+    Menu menu;
     Admin admin;
     User user;
     ClientUI ui;
