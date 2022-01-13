@@ -37,11 +37,19 @@ public class Menu {
         System.out.println("***********************************");
     }
 
-    public void menuAddReserva(){
+    public void menuInsPerc(){
         System.out.println("***********************************");
         System.out.println("*       INSIRA O SEU PERCURSO     *");
         System.out.println("***********************************");
+    }
+
+    public void menuInsDatIni(){
+        System.out.println("***********************************");
         System.out.println("*      INSIRA A DATA DE INICIO    *");
+        System.out.println("***********************************");
+    }
+
+    public void menuInsDatFin(){
         System.out.println("***********************************");
         System.out.println("*        INSIRA A DATA FINAL      *");
         System.out.println("***********************************");
@@ -65,7 +73,15 @@ public class Menu {
         System.out.println("***********************************");
         System.out.println("*          INSIRA A ORIGEM        *");
         System.out.println("***********************************");
+    }
+
+    public void menuInsDes(){
+        System.out.println("***********************************");
         System.out.println("*         INSIRA O DESTINO        *");
+        System.out.println("***********************************");
+    }
+
+    public void menuInsCap(){
         System.out.println("***********************************");
         System.out.println("*        INSIRA A CAPACIDADE      *");
         System.out.println("***********************************");
