@@ -69,14 +69,14 @@ public class ServidorFacade {
         }
     }
 
-    public User login(String nome, String password) throws NomeNaoExisteException,PalavraPasseIncorretaException{
-
+    public int login(String nome, String password){
             if (utilizadores.get(nome) == null)
-                throw new NomeNaoExisteException("Conta nao encontrada");
+                //Conta nao Encontrada
+                return 0;
             else if (!utilizadores.get(nome).getPass().equals(password))
-                throw new PalavraPasseIncorretaException("Palavra-passe incorrecta!");
-            else return utilizadores.get(nome);
-
+                //Pass incorreta
+                return 0;
+            else return 1;
     }
 
     /**adiciona um novo voo**/
@@ -86,7 +86,7 @@ public class ServidorFacade {
         this.lockserver.unlock();
     }
 
-    /**adiciona uma nova reserva**/
+    /**adiciona uma nova reserva**/ //Devolve codigo de reserva se possivel, null se impossivel
     public String addReserva(List<String> percurso, LocalDate dataInicio,LocalDate daataFim,User user) {
         try {
             List<Voo> viagem = new ArrayList<>();
