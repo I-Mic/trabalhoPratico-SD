@@ -7,7 +7,6 @@ import java.io.*;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -22,7 +21,7 @@ public class Client {
     Menu menu = new Menu();
     Admin admin;
     User user;
-    ClientUI ui = new ClientUI();
+    ClientUI ui;
 
     public Client(int port, String ip){
         this.port = port;
@@ -30,7 +29,7 @@ public class Client {
     }
 
 
-    private void menuIniUser(User user) throws IOException{
+    private void menuIniUser() throws IOException{
         try{
             String userInput;
             while((userInput = systemIn.readLine()) !=null && !userInput.equals("0")){
@@ -83,7 +82,7 @@ public class Client {
             e.printStackTrace();
         }
     }
-    private void menuIniAdmin(Admin admin) throws IOException{
+    private void menuIniAdmin() throws IOException{
         try{
             String userInput;
             while((userInput = systemIn.readLine()) !=null && !userInput.equals("0")){
@@ -149,7 +148,7 @@ public class Client {
                         menu.menuRegistrarPass();
                         String pass = systemIn.readLine();
                         clearScreen();
-                        System.out.println("|REGISTO| nome: "+ nome + "password:"+  pass);
+                        System.out.println("|REGISTO| nome: "+ nome + " password: "+  pass);
                         clearScreen();
                         resposta = in.readInt();
                         System.out.println(resposta);
@@ -157,16 +156,16 @@ public class Client {
                             System.out.println("Registo admin feito com sucesso");
                             admin = new Admin(nome,pass);
                             menu.menuAdmin();
-                            menuIniAdmin(admin);
+                            menuIniAdmin();
                         }
                         if(resposta==0){
                             System.out.println("Registo user feito com sucesso");
                             menu.menuUser();
                             user = new User(nome,pass);
-                            menuIniUser(user);
+                            menuIniUser();
                         }
                         else{
-                            System.out.println("Nome já existe.");
+                            System.out.println("Nome já existe.");// Nao foi possivel realizar op
                             menu.menuInit();
                         }
                         break;
@@ -179,19 +178,35 @@ public class Client {
                         menu.menuRegistrarPass();
                         String pass = systemIn.readLine();
                         clearScreen();
-                        System.out.println("|LOGIN| nome: "+ nome + "password:"+  pass);
-                        resposta = in.readInt();
+                        System.out.println("|LOGIN| nome: "+ nome + " password: "+  pass);
+                        ClientMsgHandler cMsg=new ClientMsgHandler(2,nome,pass);
+                        cMsg.sendMsg(clientSocket);
+                        //resposta do servidor
+                        cMsg.receiveResponse(clientSocket);
+                        resposta=cMsg.getRespostaInt();
                         System.out.println(resposta);
                         if(resposta==1){
                             System.out.println("Login feito com sucesso");
-                            menu.menuUser();
+                            admin=new Admin(nome,pass);
+                            menu.menuAdmin();
+                            menuIniAdmin();
                             // falta metodo menuUser semelhante a este
                         }
                         if(resposta==0) {
+                            //menu User
+                            menu.menuUser();
+                            user=new User(nome,pass);
+                            menuIniUser();
+                        }
+                        else{
                             System.out.println("Dados inseridos estão errados");
                             menu.menuInit();
                         }
-                        break;}
+                        break;
+                    }
+                    default:
+                        System.out.println("A Opção que inseriu não é válida. Por favor tente de novo.");
+                        menu.menuInit();
                 }
             }
             catch (NumberFormatException e){
@@ -210,7 +225,7 @@ public class Client {
         }
     }
 
-    private void startClient() throws Exception {
+    private void startClient() {
 
         try {
             System.out.println("------Client------");
@@ -219,7 +234,7 @@ public class Client {
             out = new DataOutputStream(clientSocket.getOutputStream());
             in = new DataInputStream(clientSocket.getInputStream());
             systemIn = new BufferedReader(new InputStreamReader(System.in));
-
+            startMenu();
         }catch(UnknownHostException e){
             System.out.println("[ERROR]: Server doesn't exist!");
         }
@@ -245,7 +260,7 @@ public class Client {
         System.out.flush();
     }
 
-    public static void main(String args[]) throws IOException, Exception{
+    public static void main(String args[]){
 
         Client client = new Client(12345,"127.0.0.1");
         client.startClient();
