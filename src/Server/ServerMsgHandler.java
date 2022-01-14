@@ -87,9 +87,9 @@ public class ServerMsgHandler {
     // converte uma mensagem  num array de bytes
     public void receiveMsg(Socket socket) throws IOException {
         DataInputStream dis = new DataInputStream(socket.getInputStream());
-        dis.read();
+        int i = dis.read();
 
-        switch(this.id){
+        switch(i){
             case 1:
                 this.nome = dis.readUTF();
                 this.password = dis.readUTF();
