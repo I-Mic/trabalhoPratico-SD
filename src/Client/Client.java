@@ -1,5 +1,6 @@
 package Client;
 
+import Server.ServerMsgHandler;
 import business.Admin;
 import business.User;
 
@@ -54,6 +55,9 @@ public class Client {
                         System.out.println("Insira uma data de fim no formato dd/MM//AAAA");
                         LocalDate fin =  LocalDate.parse(systemIn.readLine(),formatter);
                         clearScreen();
+                        ClientMsgHandler res = new ClientMsgHandler(3,percurso,ini,fin,user.getNome());
+                        res.sendMsg(this.clientSocket);
+                        //resposta
                         String resposta = in.readUTF();
                         if(resposta.equals("null")){
                             System.out.println("Voo não encontrado.");
@@ -66,6 +70,8 @@ public class Client {
                         clearScreen();
                         menu.menuCancReserva();
                         String cod = systemIn.readLine();
+                        ClientMsgHandler canc = new ClientMsgHandler(4,cod);
+                        canc.sendMsg(this.clientSocket);
                         int resposta = in.readInt();
                         if (resposta != 0)
                             System.out.println("Reserva removida");
@@ -104,6 +110,9 @@ public class Client {
                         System.out.println("Insira no formato dd/MM/AAAA");
                         LocalDate dia =  LocalDate.parse(systemIn.readLine(),formatter);
                         clearScreen();
+                        ClientMsgHandler voo = new ClientMsgHandler(6,ori,dest,cap,dia);
+                        voo.sendMsg(this.clientSocket);
+                        //receber
                         System.out.println("Voo criado com sucesso");
                         break;
                     }
@@ -112,6 +121,8 @@ public class Client {
                         menu.menuCancDia();
                         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/YYYY");
                         LocalDate dia =  LocalDate.parse(systemIn.readLine(),formatter);
+                        //enviar
+                        //receber
                         System.out.println("Dia " + dia.format(formatter) + "cancelado");
                         break;
                     }
@@ -148,6 +159,8 @@ public class Client {
                         menu.menuRegistrarPass();
                         String pass = systemIn.readLine();
                         clearScreen();
+                        ClientMsgHandler log = new ClientMsgHandler(1,nome,pass,adm);
+                        log.sendMsg(this.clientSocket);
                         System.out.println("|REGISTO| nome: "+ nome + " password: "+  pass);
                         clearScreen();
                         resposta = in.readInt();
