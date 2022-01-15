@@ -160,7 +160,7 @@ public class ServidorFacade {
         this.lockserver.lock();
         for (Voo voo:this.voos.values() ) {
             if (voo.getOrigem().equals(origem) && voo.getDestino().equals(destino) && voo.getCapacidade() > 0 && (voo.getData().equals(dataInicio) || voo.getData().isAfter(dataInicio)) && (voo.getData().equals(dataFim) || voo.getData().isBefore(dataFim))) {
-                this.voos.get(voo.getCodigo()).decrementCapacidade();
+                incrementeDecrement(-1 ,this.voos.get(voo.getCodigo()));
                 this.lockserver.unlock();
                 return voo;
             }
@@ -185,12 +185,19 @@ public class ServidorFacade {
                 Reserva reserva = this.reservas.get(codReserva);
                 List<Voo> lista = reserva.getViagem();
                 for(int i=0;i<lista.size();i++){
-                    this.voos.get(lista.get(i).getCodigo()).incrementCapacidade();
+                    incrementeDecrement(1,this.voos.get(lista.get(i).getCodigo()));
                 }
                 this.reservas.remove(codReserva);
                 this.lockserver.unlock();
                 return 1;
             }
+    }
+
+    public void incrementeDecrement(int n, Voo voo){
+        this.lockserver.lock();
+        if(n>0) voo.incrementCapacidade();
+        else voo.decrementCapacidade();
+        this.lockserver.unlock();
     }
 
     /**Devolve a lista de todos os voos existentes**/ //Identificador 5

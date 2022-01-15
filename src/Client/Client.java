@@ -93,7 +93,6 @@ public class Client {
                         //enviar
                         ClientMsgHandler canc = new ClientMsgHandler(cod,user.getNome());
                         canc.sendMsg(out);
-                        System.out.println("enviado");
                         //receber
                         canc.receiveResponse(in);
                         int resposta = canc.getRespostaInt();
