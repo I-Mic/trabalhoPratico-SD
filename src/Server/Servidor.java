@@ -1,11 +1,8 @@
 package Server;
 
-import data.ReservasDAO;
-import data.UtilizadoresDAO;
-import data.VoosDao;
-import data.codReservaDAO;
-import data.codVooDAO;
+import data.*;
 
+import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 
@@ -16,20 +13,26 @@ public class Servidor {
         ServerSocket ss = new ServerSocket(12345);
         ServidorFacade sf = new ServidorFacade();
 
-        sf.setUtilizadores(UtilizadoresDAO.getInstanceObj("input_files/Utilizadores"));
-        sf.setReservas(ReservasDAO.getInstanceObj("input_files/Reservas"));
-        sf.setVoos(VoosDao.getInstanceObj("input_files/Voos"));
-        sf.setcodVoo(codVooDAO.getInstanceObj("input_files/codVoo"));
-        sf.setCodigoREserva(codReservaDAO.getInstanceObj("input_files/codRes"));
+        sf.setUtilizadores(DAO.load("input_files/Utilizadores"));
+        sf.setReservas(DAO.load("input_files/Reservas"));
+        sf.setVoos(DAO.load("input_files/Voos"));
+        sf.setcodVoo(DAO.load("input_files/codVoo"));
+        sf.setCodigoREserva(DAO.load("input_files/codRes"));
+
 
         Runtime.getRuntime().addShutdownHook(new Thread() {
             public void run() {
                 System.out.println("Prepare to exit");
-                UtilizadoresDAO.saveInstanceObj(sf.getUtilizadores(),"input_files/Utilizadores");
-                ReservasDAO.saveInstanceObj(sf.getReservas(),"input_files/Reservas");
-                VoosDao.saveInstanceObj(sf.getVoos(),"input_files/Voos");
-                codReservaDAO.saveInstanceObj(sf.getCodigoREserva(),"input_files/codRes");
-                codVooDAO.saveInstanceObj(sf.getCodVoo(),"input_files/codVoo");
+                try {
+                    DAO.store(sf.getUtilizadores(),"input_files/Utilizadores");
+                    DAO.store(sf.getReservas(),"input_files/Reservas");
+                    DAO.store(sf.getVoos(),"input_files/Voos");
+                    DAO.store(sf.getCodigoREserva(),"input_files/codRes");
+                    DAO.store(sf.getCodVoo(),"input_files/codVoo");
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
             }
         });
 
@@ -41,6 +44,6 @@ public class Servidor {
             ServerWorker sw=new ServerWorker(s,sf);
             new Thread(sw).start();
         }
-      
+
     }
 }
