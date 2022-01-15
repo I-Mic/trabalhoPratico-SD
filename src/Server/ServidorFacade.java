@@ -2,7 +2,6 @@ package Server;
 
 
 import business.*;
-import Server.Exceptions.*;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -15,22 +14,28 @@ import java.util.concurrent.locks.ReentrantLock;
 public class ServidorFacade {
     private Map<String, User> utilizadores;
     private Map<String, Reserva> reservas;
-    private List<Voo> voos;
+    private Map<String, Voo> voos;
     private boolean isClosed;
     private final ReentrantLock lockserver= new ReentrantLock();
+    private int codigoREserva;
+    private int codVoo;
 
     public ServidorFacade() {
         this.utilizadores = new HashMap<>();
         this.reservas = new HashMap<>();
-        this.voos = new ArrayList<>();
+        this.voos = new HashMap<>();
         this.isClosed = false;
+        this.codigoREserva = 0;
+        this.codVoo = 0;
     }
 
-    public ServidorFacade(Map<String, User> utilizadores, Map<String, Reserva> reservas, List<Voo> voos) {
+    public ServidorFacade(Map<String, User> utilizadores, Map<String, Reserva> reservas, Map<String,Voo> voos,int codigoREserva, int codVoo) {
         this.utilizadores = utilizadores;
         this.reservas = reservas;
         this.voos = voos;
         this.isClosed=false;
+        this.codVoo = codVoo;
+        this.codigoREserva = codigoREserva;
     }
 
     public Map<String, User> getUtilizadores() {
@@ -49,11 +54,11 @@ public class ServidorFacade {
         this.reservas = reservas;
     }
 
-    public List<Voo> getVoos() {
+    public Map<String,Voo> getVoos() {
         return voos;
     }
 
-    public void setVoos(List<Voo> voos) {
+    public void setVoos(Map<String,Voo> voos) {
         this.voos = voos;
     }
 
@@ -117,16 +122,17 @@ public class ServidorFacade {
             for (int i = 0; i < percurso.size() - 1; i++){
                 Voo voo;
                 voo = getVooOrigemDestinoIntervalo(percurso.get(i),percurso.get(i+1),dataInicio,daataFim);
-                if(voo !=null)
+                if(voo != null)
                 viagem.add(voo);
             }
 
-            //if(viagem.size()==0) return "n/a";
+            if(viagem.size()==0) return "n/a";
 
             this.lockserver.lock();
 
             codigo = reservationCodeGenerator();
             Reserva reserva = new Reserva(codigo, viagem, user);
+            System.out.println(reserva);
             this.reservas.put(codigo, reserva);
 
             this.lockserver.unlock();
@@ -136,15 +142,14 @@ public class ServidorFacade {
     }
 
     public String reservationCodeGenerator(){
-        return String.valueOf((this.reservas.size() + 1));
+        return String.valueOf((this.codigoREserva ++));
     }
 
-    public Voo getVooOrigemDestinoIntervalo(String origem,String destino,LocalDate dataInicio,LocalDate dataFim){
+    public Voo getVooOrigemDestinoIntervalo(String origem,String destino,LocalDate dataInicio,LocalDate dataFim) {
         this.lockserver.lock();
-        for (int i= 0;i<this.voos.size();i++) {
-            Voo voo = this.voos.get(i);
-            if(voo.getOrigem().equals(origem) && voo.getDestino().equals(destino) && voo.getCapacidade()>0 && (voo.getData().equals(dataInicio) || voo.getData().isAfter(dataInicio)) && (voo.getData().equals(dataFim) || voo.getData().isBefore(dataFim))) {
-                this.voos.get(i).decrementCapacidade();
+        for (Voo voo:this.voos.values() ) {
+            if (voo.getOrigem().equals(origem) && voo.getDestino().equals(destino) && voo.getCapacidade() > 0 && (voo.getData().equals(dataInicio) || voo.getData().isAfter(dataInicio)) && (voo.getData().equals(dataFim) || voo.getData().isBefore(dataFim))) {
+                this.voos.get(voo.getCodigo()).decrementCapacidade();
                 this.lockserver.unlock();
                 return voo;
             }
@@ -166,6 +171,11 @@ public class ServidorFacade {
                 return 0;
             }
             else{
+                Reserva reserva = this.reservas.get(codReserva);
+                List<Voo> lista = reserva.getViagem();
+                for(int i=0;i<lista.size();i++){
+                    this.voos.get(lista.get(i).getCodigo()).incrementCapacidade();
+                }
                 this.reservas.remove(codReserva);
                 this.lockserver.unlock();
                 return 1;
@@ -179,10 +189,15 @@ public class ServidorFacade {
 
     /**adiciona um novo voo**/ //identifador 6
     public void addVoo(String origem,String destino,int capacidade,LocalDate data){
-        Voo voo = new Voo(origem,destino,capacidade,data);
         this.lockserver.lock();
-        voos.add(voo);
+        String codigo = vooCodeGenerator();
+        Voo voo = new Voo(codigo,origem,destino,capacidade,data);
+        voos.put(codigo,voo);
         this.lockserver.unlock();
+    }
+
+    public String vooCodeGenerator(){
+        return String.valueOf((this.codVoo ++ ));
     }
 
     /**Fecha servidor**/ //identificador 7

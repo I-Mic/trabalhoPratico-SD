@@ -3,25 +3,37 @@ package business;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.Objects;
+import java.util.function.BiConsumer;
 
-public class Voo implements Serializable {
+public class Voo {
+    private String codigo;
     private String origem;
     private String destino;
     private int capacidade;
     private LocalDate data;
 
     public Voo() {
+        this.codigo = null;
         this.origem = null;
         this.destino = null;
         this.capacidade = 0;
         this.data = null;
     }
 
-    public Voo(String origem, String destino, int capacidade, LocalDate data) {
+    public Voo(String codigo,String origem, String destino, int capacidade, LocalDate data) {
+        this.codigo = codigo;
         this.origem = origem;
         this.destino = destino;
         this.capacidade = capacidade;
         this.data = data;
+    }
+
+    public String getCodigo() {
+        return codigo;
+    }
+
+    public void setCodigo(String codigo) {
+        this.codigo = codigo;
     }
 
     public String getOrigem() {
@@ -60,21 +72,14 @@ public class Voo implements Serializable {
         this.capacidade--;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Voo voo = (Voo) o;
-        return capacidade == voo.capacidade && origem.equals(voo.origem) && destino.equals(voo.destino) && data.equals(voo.data);
+    public void incrementCapacidade(){
+        this.capacidade++;
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(origem, destino, capacidade, data);
-    }
+
 
     @Override
     public String toString() {
-        return  origem + "->" + destino + '\'';
+        return  origem + "->" + destino + "\n";
     }
 }

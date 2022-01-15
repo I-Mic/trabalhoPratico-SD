@@ -47,11 +47,14 @@ public class Client {
                         //Inserir Percurso
                         menu.menuInsPerc();
                         System.out.println("Insira o percurso desejado separado por enter, quando quiser acabar insira o numero 5");
-                        while(!systemIn.readLine().equals("5")){
-                            String cid = systemIn.readLine();
-                            percurso.add(cid);
+
+                        while(true){
+                            String lineRead = systemIn.readLine();
+                            if(lineRead.equals("5")) break;
+                            percurso.add(lineRead);
                         }
                         clearScreen();
+                        System.out.println(percurso);
 
                         //Data do inicio
                         menu.menuInsDatIni();

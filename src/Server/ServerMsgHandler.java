@@ -3,6 +3,8 @@ package Server;
 import java.io.*;
 import java.net.Socket;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -101,7 +103,9 @@ public class ServerMsgHandler {
                 break;
 
             case 3:
-                this.percurso = Collections.singletonList(dis.readUTF());
+                String percusoString = dis.readUTF();
+                this.percurso = Arrays.asList(percusoString.substring(1,percusoString.length()-1).split(", "));
+                System.out.println(this.percurso);
                 this.dataInicio = LocalDate.parse(dis.readUTF());
                 this.dataFim = LocalDate.parse(dis.readUTF());
                 this.nome = dis.readUTF();
