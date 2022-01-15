@@ -22,7 +22,7 @@ public class Servidor {
 
         Runtime.getRuntime().addShutdownHook(new Thread() {
             public void run() {
-                System.out.println("Prepare to exit");
+                System.out.println("A fechar Servidor");
                 try {
                     DAO.store(sf.getUtilizadores(),"input_files/Utilizadores");
                     DAO.store(sf.getReservas(),"input_files/Reservas");
