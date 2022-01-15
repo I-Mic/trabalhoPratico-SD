@@ -35,7 +35,7 @@ public class Client {
         try{
             menu.menuUser();
             String userInput;
-            while((userInput = systemIn.readLine()) !=null && !userInput.equals("0")){
+            while((userInput = systemIn.readLine()) !=null && !userInput.equals("0") ){
                 int op = Integer.parseInt(userInput);
                 switch (op){
                     case 1:{
@@ -80,8 +80,9 @@ public class Client {
                         else if(resposta.equals("closed")){
                             System.out.println("Servidor encontra-se fechado");
                         }
-                        else System.out.println("Código de reserva:" + resposta);
-
+                        else {System.out.println("Código de reserva:" + resposta);}
+                        clearScreen();
+                        menu.menuUser();
                         break;
                     }
                     case 2: {
@@ -100,8 +101,9 @@ public class Client {
 
                         if (resposta == 1) System.out.println("Reserva removida");
                         else if (resposta == 0) System.out.println("Reserva não encontrada");
-                        else System.out.println("Servidor encontra-se fechado");
-
+                        else {System.out.println("Servidor encontra-se fechado");}
+                        clearScreen();
+                        menu.menuUser();
                         break;
                     }
                     case 3:{
@@ -112,6 +114,8 @@ public class Client {
                         //receber
                         listVoo.receiveResponse(in);
                         System.out.println("Voos existentes: " + listVoo.getRespostaString());
+                        clearScreen();
+                        menu.menuUser();
                         break;
                     }
                 }
@@ -124,7 +128,7 @@ public class Client {
         try{
             menu.menuAdmin();
             String userInput;
-            while((userInput = systemIn.readLine()) !=null && !userInput.equals("0")){
+            while((userInput = systemIn.readLine()) !=null && !userInput.equals("0") ){
                 int op = Integer.parseInt(userInput);
                 switch (op){
                     case 1:{
@@ -148,11 +152,12 @@ public class Client {
                         System.out.println("Insira no formato dd/MM/AAAA");
                         LocalDate dia =  LocalDate.parse(systemIn.readLine(),formatter);
                         clearScreen();
-
                         //Enviar
                         ClientMsgHandler voo = new ClientMsgHandler(6,ori,dest,cap,dia);
                         voo.sendMsg(out);
                         System.out.println("Voo criado com sucesso");
+                        clearScreen();
+                        menu.menuAdmin();
                         break;
                     }
                     case 2: {
@@ -166,6 +171,8 @@ public class Client {
                         int resposta = cancelarDia.getRespostaInt();
                         if (resposta == 1) System.out.println("Servidor fechado por hoje");
                         else System.out.println("Servidor ja se encontra fechado por hoje");
+                        clearScreen();
+                        menu.menuAdmin();
                         break;
                     }
                     case 3:{
@@ -179,12 +186,12 @@ public class Client {
                         int response = abrirDia.getRespostaInt();
                         if(response == 1) System.out.println("Servidor reaberto");
                         else System.out.println("Servidor ja se encontra aberto");
+                        clearScreen();
+                        menu.menuAdmin();
+                        break;
                     }
 
-
-                }
-
-            }
+            }}
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -205,7 +212,7 @@ public class Client {
                         //registar Conta
                         clearScreen();
                         int adm = 0;//1 se sim, 0 se não
-                        System.out.println("Deseja registar-se como admin?");
+                        System.out.println("Deseja registar-se como admin? Insira Sim caso queira.");
                         if(systemIn.readLine().equals("Sim"))
                             adm=1;
                         clearScreen();
@@ -221,7 +228,6 @@ public class Client {
                         //Enviar
                         ClientMsgHandler log = new ClientMsgHandler(1,nome,pass,adm);
                         log.sendMsg(out);
-                        System.out.println("|REGISTO| nome: "+ nome + " password: "+  pass);
                         clearScreen();
 
                         //receber
@@ -231,18 +237,28 @@ public class Client {
                             System.out.println("Registo feito com sucesso");
                             if(adm == 1) {
                                 Admin admin = new Admin(nome, pass);
+                                System.out.println("Bem vindo Admin: " + admin.getNome());
                                 menuIniAdmin(admin);
+                                menu.menuInit();
+                                break;
+
                             }
                             else{
                                 User user = new User(nome,pass);
+                                System.out.println("Bem vindo Utilizador: " + user.getNome());
                                 menuIniUser(user);
+                                menu.menuInit();
+                                break;
+
                             }
                         }
                         else{
                             System.out.println("Nome ja existe");
                             menu.menuInit();
+                            break;
+
                         }
-                        break;
+
                     }
 
                     case 2:{
@@ -255,7 +271,6 @@ public class Client {
                         String pass = systemIn.readLine();
                         clearScreen();
 
-                        System.out.println("|LOGIN| nome: "+ nome + " password: "+  pass);
 
                         ClientMsgHandler cMsg=new ClientMsgHandler(2,nome,pass);
                         cMsg.sendMsg(out);
@@ -269,19 +284,25 @@ public class Client {
                             //Menu Admin
                             System.out.println("Login feito com sucesso");
                             Admin admin=new Admin(nome,pass);
+                            System.out.println("Bem vindo Admin: " + admin.getNome());
                             menuIniAdmin(admin);
+                            menu.menuInit();
+                            break;
                         }
                         if(resposta==0) {
                             //menu User
                             System.out.println("Login feito com sucesso");
                             User user=new User(nome,pass);
+                            System.out.println("Bem vindo Utilizador: " + user.getNome());
                             menuIniUser(user);
+                            menu.menuInit();
+                            break;
                         }
                         else{
                             System.out.println("Dados inseridos estão errados");
                             menu.menuInit();
+                            break;
                         }
-                        break;
                     }
                     default:
                         System.out.println("A Opção que inseriu não é válida. Por favor tente de novo.");

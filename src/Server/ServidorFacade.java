@@ -61,6 +61,18 @@ public class ServidorFacade {
     public void setVoos(Map<String,Voo> voos) {
         this.voos = voos;
     }
+    public void setcodVoo(int codVOO) {
+        this.codVoo = codVOO;
+    }
+    public void setCodigoREserva(int codRes) {
+        this.codigoREserva = codRes;
+    }
+    public int getCodigoREserva(){
+        return codigoREserva;
+    }
+    public int getCodVoo(){
+        return codVoo;
+    }
 
     public boolean isClosed() {
         return isClosed;
