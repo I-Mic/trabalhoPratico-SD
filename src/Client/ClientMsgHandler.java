@@ -157,45 +157,47 @@ public class ClientMsgHandler {
     }
 
     // converte uma mensagem  num array de bytes
-    public void sendMsg(Socket socket) throws IOException {
-        DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
-        dos.write(this.id);
+    public void sendMsg(DataOutputStream dos) throws IOException {
+
+        dos.writeInt(this.id);
 
         switch(this.id){
             case 1:
                 dos.writeUTF(this.nome);
                 dos.writeUTF(this.password);
                 dos.write(this.isAdmin);
+                break;
 
             case 2:
                 dos.writeUTF(this.nome);
                 dos.writeUTF(this.password);
+                break;
 
             case 3:
                 dos.writeUTF(String.valueOf(this.percurso));
                 dos.writeUTF(String.valueOf(this.dataInicio));
                 dos.writeUTF(String.valueOf(this.dataFim));
                 dos.writeUTF(this.nome);
+                break;
 
             case 4:
                 dos.writeUTF(this.codReserva);
                 dos.writeUTF(this.nome);
+                break;
 
             case 6:
                 dos.writeUTF(this.origem);
                 dos.writeUTF(this.destino);
                 dos.write(this.capacidade);
                 dos.writeUTF(String.valueOf(this.data));
-
+                break;
 
         }
-        dos.close();
     }
 
-    public void receiveResponse(Socket socket) throws IOException {
-        DataInputStream dis = new DataInputStream(socket.getInputStream());
-          int id = dis.read();
-          if(id == 1) this.respostaInt = dis.read();
+    public void receiveResponse(DataInputStream dis) throws IOException {
+          int id = dis.readInt();
+          if(id == 1) this.respostaInt = dis.readInt();
           else this.respostaString = dis.readUTF();
 
 

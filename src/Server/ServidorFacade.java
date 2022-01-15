@@ -11,22 +11,26 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.locks.ReentrantLock;
 
+
 public class ServidorFacade {
     private Map<String, User> utilizadores;
     private Map<String, Reserva> reservas;
     private List<Voo> voos;
+    private boolean isClosed;
     private final ReentrantLock lockserver= new ReentrantLock();
 
     public ServidorFacade() {
         this.utilizadores = new HashMap<>();
         this.reservas = new HashMap<>();
         this.voos = new ArrayList<>();
+        this.isClosed = false;
     }
 
     public ServidorFacade(Map<String, User> utilizadores, Map<String, Reserva> reservas, List<Voo> voos) {
         this.utilizadores = utilizadores;
         this.reservas = reservas;
         this.voos = voos;
+        this.isClosed=false;
     }
 
     public Map<String, User> getUtilizadores() {
@@ -51,6 +55,14 @@ public class ServidorFacade {
 
     public void setVoos(List<Voo> voos) {
         this.voos = voos;
+    }
+
+    public boolean isClosed() {
+        return isClosed;
+    }
+
+    public void setClosed(boolean closed) {
+        isClosed = closed;
     }
 
     /**adiciona um novo utilizdor**/ //Identificador 1
@@ -98,12 +110,18 @@ public class ServidorFacade {
 
     /**adiciona uma nova reserva**/ //Identificador 3: Devolve codigo de reserva se possivel, n/a se impossivel
     public String addReserva(List<String> percurso, LocalDate dataInicio,LocalDate daataFim,String nome) {
-        try {
+        if(this.isClosed) return "closed";
             User user = this.utilizadores.get(nome);
             List<Voo> viagem = new ArrayList<>();
             String codigo;
-            for (int i = 0; i < percurso.size() - 1; i++)
-                viagem.add(getVooOrigemDestinoIntervalo(percurso.get(i), percurso.get(i + 1), dataInicio, daataFim));
+            for (int i = 0; i < percurso.size() - 1; i++){
+                Voo voo;
+                voo = getVooOrigemDestinoIntervalo(percurso.get(i),percurso.get(i+1),dataInicio,daataFim);
+                if(voo !=null)
+                viagem.add(voo);
+            }
+
+            //if(viagem.size()==0) return "n/a";
 
             this.lockserver.lock();
 
@@ -113,35 +131,31 @@ public class ServidorFacade {
 
             this.lockserver.unlock();
             return codigo;
-        }
-        catch (VooNaoEncontradoException e){
-            return "n/a";
-        }
+
+
     }
 
     public String reservationCodeGenerator(){
         return String.valueOf((this.reservas.size() + 1));
     }
 
-    public Voo getVooOrigemDestinoIntervalo(String origem,String destino,LocalDate dataInicio,LocalDate dataFim) throws VooNaoEncontradoException{
-        try {
-            this.lockserver.lock();
-            for (int i= 0;i<this.voos.size();i++) {
-                Voo voo = this.voos.get(i);
-                if(voo.getOrigem().equals(origem) && voo.getDestino().equals(destino) && voo.getCapacidade()>0 && voo.getData().isAfter(dataInicio) && voo.getData().isBefore(dataFim)) {
-                    this.voos.get(i).decrementCapacidade();
-                    return voo;
-                }
+    public Voo getVooOrigemDestinoIntervalo(String origem,String destino,LocalDate dataInicio,LocalDate dataFim){
+        this.lockserver.lock();
+        for (int i= 0;i<this.voos.size();i++) {
+            Voo voo = this.voos.get(i);
+            if(voo.getOrigem().equals(origem) && voo.getDestino().equals(destino) && voo.getCapacidade()>0 && (voo.getData().equals(dataInicio) || voo.getData().isAfter(dataInicio)) && (voo.getData().equals(dataFim) || voo.getData().isBefore(dataFim))) {
+                this.voos.get(i).decrementCapacidade();
+                this.lockserver.unlock();
+                return voo;
             }
-            throw new VooNaoEncontradoException("Voo nao encontrado!");
-
-        } finally {
-            this.lockserver.unlock();
         }
+        this.lockserver.unlock();
+        return null;
     }
 
     /**cancela uma reserva**/ //Identificador 4
     public int removeReserva(String codReserva,String utilizador) {
+        if(this.isClosed) return -1;
         this.lockserver.lock();
             if (this.reservas.get(codReserva) == null) {
                 this.lockserver.unlock();
@@ -170,4 +184,19 @@ public class ServidorFacade {
         voos.add(voo);
         this.lockserver.unlock();
     }
+
+    /**Fecha servidor**/ //identificador 7
+    public int closeServer(){
+        if(this.isClosed) return 0;
+        setClosed(true);
+        return 1;
+    }
+
+    /**Reabre o servidor**/ //identificador 8
+    public int openServer(){
+        if(!this.isClosed) return 0;
+        setClosed(false);
+        return 1;
+    }
+
 }

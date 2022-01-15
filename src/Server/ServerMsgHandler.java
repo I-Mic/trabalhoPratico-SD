@@ -85,51 +85,52 @@ public class ServerMsgHandler {
 
 
     // converte uma mensagem  num array de bytes
-    public void receiveMsg(Socket socket) throws IOException {
-        DataInputStream dis = new DataInputStream(socket.getInputStream());
-        int i = dis.read();
+    public int receiveMsg(DataInputStream dis) throws IOException {
+        int i = dis.readInt();
 
         switch(i){
             case 1:
                 this.nome = dis.readUTF();
                 this.password = dis.readUTF();
                 this.isAdmin = dis.read();
+                break;
 
             case 2:
                 this.nome = dis.readUTF();
                 this.password = dis.readUTF();
+                break;
 
             case 3:
                 this.percurso = Collections.singletonList(dis.readUTF());
                 this.dataInicio = LocalDate.parse(dis.readUTF());
                 this.dataFim = LocalDate.parse(dis.readUTF());
                 this.nome = dis.readUTF();
+                break;
 
             case 4:
                 this.codReserva = dis.readUTF();
                 this.nome = dis.readUTF();
+                break;
 
             case 6:
                 this.origem = dis.readUTF();
                 this.destino = dis.readUTF();
                 this.capacidade= dis.read();
                 this.data = LocalDate.parse(dis.readUTF());
+                break;
 
         }
-        dis.close();
+
+        return i;
     }
 
-    public void sendResponseInt(Socket socket,int resposta) throws IOException {
-        DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
-        dos.write(1);
-        dos.write(resposta);
-        dos.close();
+    public void sendResponseInt(DataOutputStream dos,int resposta) throws IOException {
+        dos.writeInt(1);
+        dos.writeInt(resposta);
     }
 
-    public void sendResponseString(Socket socket,String resposta) throws IOException {
-        DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
-        dos.write(2);
+    public void sendResponseString(DataOutputStream dos,String resposta) throws IOException {
+        dos.writeInt(2);
         dos.writeUTF(resposta);
-        dos.close();
     }
 }

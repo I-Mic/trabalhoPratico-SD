@@ -72,6 +72,7 @@ public class Menu {
         System.out.println("***********************************");
         System.out.println("*      [1] INSERIR VOO            *");
         System.out.println("*      [2] CANCELAR DIA           *");
+        System.out.println("*      [3] Reabrir DIA            *");
         System.out.println("*      [0] LOGOUT                 *");
         System.out.println("***********************************");
     }
