@@ -1,27 +1,24 @@
 package data;
-import java.io.*;
-import java.util.Map;
-import business.*;
 
-public class ReservasDAO {
-    public  static void saveInstanceObj(Map<String, Reserva> reservas,String filepath){
+import java.io.*;
+
+public class codReservaDAO {
+    public  static void saveInstanceObj(int codRESERVA, String filepath){
         try {
             FileOutputStream fileOut = new FileOutputStream(filepath);
             ObjectOutputStream objectOut = new ObjectOutputStream(fileOut);
-            objectOut.writeObject(reservas);
+            objectOut.writeObject(codRESERVA);
             objectOut.close();
         } catch (Exception ex) {
             ex.printStackTrace();
         }
     }
 
-    public static Map <String,Reserva> getInstanceObj(String path) throws IOException, ClassNotFoundException {
+    public static int getInstanceObj(String path) throws IOException, ClassNotFoundException {
         ObjectInputStream ss = new ObjectInputStream(new FileInputStream(path));
-        Map <String,Reserva>  s = (Map <String,Reserva> ) ss.readObject();
+        int codRESERVA  = (int) ss.readObject();
         ss.close();
-        return s;
+        return codRESERVA;
 
     }
-
-
 }
