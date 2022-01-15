@@ -21,7 +21,6 @@ public class Client {
     private BufferedReader systemIn;
     Menu menu;
 
-    ClientUI ui;
 
 
     public Client(int port, String ip){

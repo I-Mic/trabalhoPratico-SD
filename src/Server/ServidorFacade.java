@@ -144,7 +144,6 @@ public class ServidorFacade {
 
             codigo = reservationCodeGenerator();
             Reserva reserva = new Reserva(codigo, viagem, user);
-            System.out.println(reserva);
             this.reservas.put(codigo, reserva);
 
             this.lockserver.unlock();

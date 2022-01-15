@@ -105,7 +105,6 @@ public class ServerMsgHandler {
             case 3:
                 String percusoString = dis.readUTF();
                 this.percurso = Arrays.asList(percusoString.substring(1,percusoString.length()-1).split(", "));
-                System.out.println(this.percurso);
                 this.dataInicio = LocalDate.parse(dis.readUTF());
                 this.dataFim = LocalDate.parse(dis.readUTF());
                 this.nome = dis.readUTF();

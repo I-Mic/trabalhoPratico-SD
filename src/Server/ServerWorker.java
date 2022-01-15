@@ -22,8 +22,7 @@ public class ServerWorker implements Runnable {
     public void run(){
         try{
             ServerMsgHandler mesenger = new ServerMsgHandler();
-            System.out.println("Vou receber");
-            int i = 0;
+            int i;
             int respostaInt;
             String respostaString;
             while(!s.isClosed()) {
@@ -32,31 +31,26 @@ public class ServerWorker implements Runnable {
                     case 1:
 
                         respostaInt = sf.registarUtilizador(mesenger.getNome(), mesenger.getPassword(), mesenger.getIsAdmin());
-                        System.out.println(respostaInt);
                         mesenger.sendResponseInt(this.dos, respostaInt);
                         break;
 
                     case 2:
                         respostaInt = sf.login(mesenger.getNome(), mesenger.getPassword());
-                        System.out.println(respostaInt);
                         mesenger.sendResponseInt(this.dos, respostaInt);
                         break;
 
                     case 3:
                         respostaString = sf.addReserva(mesenger.getPercurso(), mesenger.getDataInicio(), mesenger.getDataFim(), mesenger.getNome());
-                        System.out.println(respostaString);
                         mesenger.sendResponseString(this.dos, respostaString);
                         break;
 
                     case 4:
                         respostaInt = sf.removeReserva(mesenger.getCodReserva(), mesenger.getNome());
-                        System.out.println(respostaInt);
                         mesenger.sendResponseInt(this.dos, respostaInt);
                         break;
 
                     case 5:
                         respostaString = sf.listaVoosExistentes();
-                        System.out.println(respostaString);
                         mesenger.sendResponseString(this.dos, respostaString);
                         break;
 
@@ -66,13 +60,11 @@ public class ServerWorker implements Runnable {
 
                     case 7:
                         respostaInt = sf.closeServer();
-                        System.out.println(respostaInt);
                         mesenger.sendResponseInt(this.dos, respostaInt);
                         break;
 
                     case 8:
                         respostaInt = sf.openServer();
-                        System.out.println(respostaInt);
                         mesenger.sendResponseInt(this.dos, respostaInt);
                         break;
 
@@ -82,7 +74,7 @@ public class ServerWorker implements Runnable {
 
 
         } catch (IOException e) {
-            /**ver aqui**/
+
         }
 
     }

@@ -1,11 +1,12 @@
 package business;
 
 import java.io.Serializable;
+import java.net.ServerSocket;
 import java.time.LocalDate;
 import java.util.Objects;
 import java.util.function.BiConsumer;
 
-public class Voo {
+public class Voo implements Serializable {
     private String codigo;
     private String origem;
     private String destino;
